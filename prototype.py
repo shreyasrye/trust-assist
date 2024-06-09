@@ -9,11 +9,9 @@ IMG_PATH = "sample_data/ultra2.png"
 MODEL = "gpt-4o"
 session_store = {}
 
-os.environ.get("OPENAI_API_KEY")
-client = OpenAI(api_key=os.environ.get("OPENAI_API_KEY"))
-
 with open("config.json", "r") as config_file:
     config = json.load(config_file)
+client = OpenAI(api_key=config["openai"]["api_key"])
     
 def get_prompts():
     with open("prompts.json", "r") as prompts_file:
@@ -33,7 +31,7 @@ def process_image(img_prompt, encoded_image):
             {"role": "system", "content": img_prompt},
             {"role": "user", "content": [
                 {"type": "image_url", "image_url": 
-                {"url": f"data:image/png;base64, {encode_image}"}
+                {"url": f"data:image/png;base64, {encoded_image}"}
                 }
             ]},
         ],
