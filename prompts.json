@@ -1,0 +1,15 @@
+{
+    "prompts": {
+        "img_prompt": "Identify this image. what is it? See if you can find the make and model of this machine if it is a machine. If it is not a machine, please provide a brief description, and then ask for an image of a machine.",
+        "additional_questions": 
+        {
+            "Visible lines or dark patches on the imaging screen." : "Dead elements in the array, defective cables or connectors,or bent/broken pins.",
+            "Weak or patchy imaging due to misplaced piezoelectric crystals": "Dropping the probe, which misplaces the crystals.",
+            "Cracks or splits in the flexible rubber surrounding the cables": "Continuous strain and tension on the cables.",
+            " Impaired scanning ability due to bent pins in the probe connectors": "Excessive use leading to bent or broken pins",
+            "Cracks, splits, or small tears in the soft silicone coating surrounding the probe": "Frequent contact with skin causing degradation over time.",
+            "Hairline scratches on the lens affecting imaging quality": "Cleaning and heavy usage over time"
+        }
+        
+    }
+}
