@@ -1,15 +1,13 @@
 {
-    "prompts": {
-        "img_prompt": "Identify this image. what is it? See if you can find the make and model of this machine if it is a machine. If it is not a machine, please provide a brief description, and then ask for an image of a machine.",
-        "additional_questions": 
-        {
-            "Visible lines or dark patches on the imaging screen." : "Dead elements in the array, defective cables or connectors,or bent/broken pins.",
-            "Weak or patchy imaging due to misplaced piezoelectric crystals": "Dropping the probe, which misplaces the crystals.",
-            "Cracks or splits in the flexible rubber surrounding the cables": "Continuous strain and tension on the cables.",
-            " Impaired scanning ability due to bent pins in the probe connectors": "Excessive use leading to bent or broken pins",
-            "Cracks, splits, or small tears in the soft silicone coating surrounding the probe": "Frequent contact with skin causing degradation over time.",
-            "Hairline scratches on the lens affecting imaging quality": "Cleaning and heavy usage over time"
-        }
-        
+    "img_prompt": "Identify this image. Is there a machine present? And are there any issues that are visibly apparent. For answering these questions, provide the output as exactly a JSON format: {'is_machine':'boolean','machine_type':'string', 'make': 'string', 'model': 'string' , 'issue': 'string' } (feel free to add other values in the json that make sense). If any of the string values are unable to be observed, set its value to None.",
+    
+    "additional_questions": 
+    {
+        "Visible lines or dark patches on the imaging screen." : "Dead elements in the array, defective cables or connectors,or bent/broken pins.",
+        "Weak or patchy imaging due to misplaced piezoelectric crystals": "Dropping the probe, which misplaces the crystals.",
+        "Cracks or splits in the flexible rubber surrounding the cables": "Continuous strain and tension on the cables.",
+        " Impaired scanning ability due to bent pins in the probe connectors": "Excessive use leading to bent or broken pins",
+        "Cracks, splits, or small tears in the soft silicone coating surrounding the probe": "Frequent contact with skin causing degradation over time.",
+        "Hairline scratches on the lens affecting imaging quality": "Cleaning and heavy usage over time"
     }
 }
