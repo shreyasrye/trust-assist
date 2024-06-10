@@ -1,13 +1,10 @@
 from openai import OpenAI
 import os
-import base64
 import json
-import openai
+import requests
 
 
-IMG_PATH = "sample_data/ultra2.png"
 MODEL = "gpt-4o"
-session_store = {}
 
 with open("config.json", "r") as config_file:
     config = json.load(config_file)
@@ -20,34 +17,51 @@ def get_prompts():
         additional_questions = prompts["additional_questions"]
     return image_prompt, additional_questions
 
-def encode_image(img_path):
-    with open(img_path, "rb") as image_file:
-        return base64.b64encode(image_file.read()).decode("utf-8")
-
-def process_image(img_prompt, encoded_image):
+def process_image(img_prompt, img_url):
     completion = client.chat.completions.create(
         model=MODEL,
         messages=[
             {"role": "system", "content": img_prompt},
             {"role": "user", "content": [
-                {"type": "image_url", "image_url": 
-                {"url": f"data:image/png;base64, {encoded_image}"}
-                }
+                {"type": "image_url", 
+                 "image_url": {
+                    "url": img_url
+                    },
+                },
             ]},
         ],
-        temperature=0.0
+        temperature=0.2
     )
     return completion.choices[0].message.content
 
-def save_session(session_id, data):
-    session_store[session_id] = data
+def ask_additional_questions(img_url, output, questions):
+    new_prompt = f"{output} Based on this output, use these additional questions on the image to see if any more information can be gained on the issue (if there is an issue, otherwise disregard the questions. Also, by questions I mean the keys in the dictionary, and store the respective answers (the values of the dictionary) as the answer). Make sure to only use the questions/answers that are still needed, not those that we already have answers to: {questions}"
+    completion = client.chat.completions.create(
+        model=MODEL,
+        messages=[
+            # do the same here but with the new prompt, the image and the additional questions
+            {"role": "system", "content": new_prompt},
+            {"role": "user", "content": [
+                {"type": "image_url", 
+                 "image_url": {
+                    "url": img_url
+                    },
+                },
+            ]},
+        ],
+        temperature=0.2
+    )
+    return completion.choices[0].message.content
 
-def get_session(session_id):
-    return session_store.get(session_id)
+def main():
+    IMAGE_URL = "https://drive.google.com/uc?export=download&id=1-0r7Gyfqu1xPbQ3fQHv5ROGXuyQJQRG8"
+    initial_prompt, additional_questions = get_prompts()
+    init_output = process_image(initial_prompt, IMAGE_URL)
+    final_output = ask_additional_questions(IMAGE_URL, init_output, additional_questions)
+    print("Assistant: " + final_output)
+
+if __name__ == '__main__':
+    main()
 
 
-initial_prompt, additional_questions = get_prompts()
-image_base64 = encode_image(IMG_PATH)
-
-print(process_image(initial_prompt, image_base64))
 
