@@ -24,13 +24,13 @@ def extract_text_from_pdf(pdf_path):
         text += pdf_reader.pages[page].extract_text()
     return text
 
-# Function to split text into chunks
+# Split text into chunks
 def split_text(text, chunk_size=500):
     words = text.split()
     chunks = [' '.join(words[i:i + chunk_size]) for i in range(0, len(words), chunk_size)]
     return chunks
 
-# Function to generate embeddings
+# Generate embeddings
 def generate_embeddings(text_chunks):
     embeddings = []
     for chunk in tqdm.tqdm(text_chunks, desc="Generating embeddings"):
@@ -39,17 +39,50 @@ def generate_embeddings(text_chunks):
     return embeddings
 
 
-pdf_path = "CX50_User_Manual.pdf"
-text = extract_text_from_pdf(pdf_path)
-text_chunks = split_text(text)
-embeddings = generate_embeddings(text_chunks)
+# pdf_path = "CX50_User_Manual.pdf"
+# text = extract_text_from_pdf(pdf_path)
+# text_chunks = split_text(text)
+# embeddings = generate_embeddings(text_chunks)
 
-# Store embeddings in Pinecone
-ids = [f"chunk-{i}" for i in range(len(text_chunks))]
-metadata = [{'text': chunk} for chunk in text_chunks]
-pinecone_vectors = list(zip(ids, embeddings, metadata))
-index.upsert(vectors=pinecone_vectors)
-
-
+# # Store embeddings in Pinecone
+# ids = [f"chunk-{i}" for i in range(len(text_chunks))]
+# metadata = [{'text': chunk} for chunk in text_chunks]
+# pinecone_vectors = list(zip(ids, embeddings, metadata))
+# index.upsert(vectors=pinecone_vectors)
 
 
+# Function to query Pinecone and generate response
+def query_pinecone_and_generate_response(query):
+    source_list = []
+    texts = []
+    
+    # Generate embedding for the query
+    query_embedding = client.embeddings.create(
+        input=[query], 
+        model="text-embedding-ada-002",
+        ).data[0].embedding
+    
+    # Query Pinecone for the most relevant chunks
+    query_result = index.query(vector=query_embedding, top_k=5, include_metadata=True)
+    
+    # Retrieve the text of the most relevant chunks
+    relevant_texts = [match['metadata']['text'] for match in query_result['matches']]
+    
+    # Combine the relevant texts and query for context
+    context = '\n\n'.join(relevant_texts)
+    prompt = f"Context: {context}\n\nQuestion: {query}\nAnswer:"
+
+    # Generate response with GPT-4o
+    response = client.chat.completions.create(
+        model="gpt-4o",
+        messages=[
+            {"role": "system", "content": prompt},
+        ],
+        temperature=0.0
+    )
+    return response.choices[0].message.content
+
+# Example usage
+query = "How can I reboot the system?"
+response = query_pinecone_and_generate_response(query)
+print(response)
