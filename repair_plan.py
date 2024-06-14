@@ -1,9 +1,9 @@
 import json
-import prototype
+import diagnostic
 from openai import OpenAI
 
 FLOWCHART_URL = "https://bmet.ewh.org/server/api/core/bitstreams/ac88d555-d4ba-4950-9250-1f4bfb9a9556/content"
-QUESTION = "Based on this initial diagnosis, and the fact that this issue is not remotely solvable, create a repair plan, orders parts needed, and create an incident report. please provide the repair plan based on this flowchart:"
+QUESTION = "Based on this initial diagnosis, and the fact that this issue is not remotely solvable, create a repair plan, and order parts needed. please provide the repair plan based on this flowchart:"
 
 with open("config.json", "r") as config_file:
     config = json.load(config_file)

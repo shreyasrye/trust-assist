@@ -1,21 +1,18 @@
-import prototype
-import rag
+import diagnostic
+import remote_troubleshooting
 import repair_plan
 import json
 
-
-
-
 def initial_diagnosis(image_url, user_msg):
-    initial_prompt, secondary_prompt, additional_questions = prototype.get_prompts()
-    return prototype.process_image("gpt-4o", initial_prompt, user_msg, image_url)
+    initial_prompt, secondary_prompt, additional_questions = diagnostic.get_prompts()
+    return diagnostic.process_image("gpt-4o", initial_prompt, user_msg, image_url)
 
 def secondary_diagnosis(image_url, init_diag):
-    initial_prompt, secondary_prompt, additional_questions = prototype.get_prompts()
-    return prototype.ask_additional_questions("gpt-4o", image_url, init_diag, secondary_prompt, additional_questions)
+    initial_prompt, secondary_prompt, additional_questions = diagnostic.get_prompts()
+    return diagnostic.ask_additional_questions("gpt-4o", image_url, init_diag, secondary_prompt, additional_questions)
 
 def create_diagnostic_report(input_query):
-    return rag.main(input_query)
+    return remote_troubleshooting.main(input_query)
 
 def create_repair_plan(init_diagnosis, context, query):
     return repair_plan.generate_repair_plan(init_diagnosis, context, query)
