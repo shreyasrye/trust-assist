@@ -3,6 +3,7 @@ from openai import OpenAI
 import json
 import PyPDF2
 import tqdm
+import prototype
 
 with open("config.json", "r") as config_file:
         config = json.load(config_file)
@@ -56,7 +57,7 @@ def query_pinecone_and_generate_response(query):
     relevant_texts = [match['metadata']['text'] for match in query_result['matches']]
     
     context = '\n\n'.join(relevant_texts)
-    prompt = f"Context: {context}\n\nQuestion: {query}\nAnswer:"
+    prompt = f"Context: {context}\n\n Create a set of troubleshooting steps for the hospital staff to solve the issue. Question: {query}.\nAnswer:"
 
     response = client.chat.completions.create(
         model="gpt-4o",
@@ -67,7 +68,7 @@ def query_pinecone_and_generate_response(query):
     )
     return response.choices[0].message.content
 
-def main():
+def main(input_query):
     pdf_path = config["pdf_path"]
 
     text = extract_text_from_pdf(pdf_path)
@@ -84,9 +85,13 @@ def main():
     index.upsert(vectors=pinecone_vectors)
 
     # Query Pinecone index and generate response
-    query = "what are the troubleshooting steps if the machine is not turning on?" # Change to anthing you want to ask
-    response = query_pinecone_and_generate_response(query)
-    print(response)
+    
+    response = query_pinecone_and_generate_response(input_query)
+    return response
 
-if __name__ == "__main__":
-    main()
+# if __name__ == "__main__":
+#     context = json.loads(prototype.main())
+#     print(context)
+
+#     query = context["posed_question"]
+#     print(main(query))
