@@ -60,13 +60,13 @@ def ask_additional_questions(llm_model, img_url, output, new_prompt, questions):
 
 def main():
     IMAGE_URL = "https://drive.google.com/uc?export=download&id=17yL8_Ml4KShHQOJv8MlzHCmeWVcXMYoY"
-    USER_MESSAGE = "This is a Philips Ultrasound Machine, it's a CX50. There are scratches on the lens, which are affecting the quality of the image. The machine is currently off."
+    USER_MESSAGE = "This is a Philips Ultrasound Machine, it's a CX50. There are scratches on the lens, which are affecting the quality of the image. The machine is currently off, and also won't turn back on."
     MODEL = "gpt-4o"
 
     initial_prompt, secondary_prompt, additional_questions = get_prompts()
     init_output = process_image(MODEL, initial_prompt, USER_MESSAGE, IMAGE_URL)
     final_output = ask_additional_questions(MODEL, IMAGE_URL, init_output, secondary_prompt, additional_questions)
-    print(final_output)
+    return final_output
 
 if __name__ == '__main__':
     main()
