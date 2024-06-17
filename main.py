@@ -19,22 +19,37 @@ def create_repair_plan(init_diagnosis, context, query):
 
 
 IMAGE_URL = "https://drive.google.com/uc?export=download&id=17yL8_Ml4KShHQOJv8MlzHCmeWVcXMYoY"
-USER_MESSAGE = "This is a Philips Ultrasound Machine, it's a CX50. The screen is cracked and the machine is not turning on."
+USER_MESSAGE = open("input.txt", "r").read()
 MODEL = "gpt-4o"
 
 # Steps:
 
-init_diagnosis = initial_diagnosis(IMAGE_URL, USER_MESSAGE)
+# Write init_diagnosis to a text file
+with open('/Users/shreyasrai/Documents/trustassist/output.txt', 'w') as file:
+    init_diagnosis = initial_diagnosis(IMAGE_URL, USER_MESSAGE)
+    secondary_diagnosis = secondary_diagnosis(IMAGE_URL, init_diagnosis)
 
-secondary_diagnosis = secondary_diagnosis(IMAGE_URL, init_diagnosis)
+    file.write("Initial Diagnosis: \n")
+    file.write(init_diagnosis)
+    file.write("\n\n")
+    file.write("Secondary Diagnosis: \n")
+    file.write(secondary_diagnosis)
+    file.write("\n\n")
+    if json.loads(secondary_diagnosis)["remotely_solvable"] == True:
+        file.write("Diagnostic Report: \n")
+        file.write(create_diagnostic_report(secondary_diagnosis))
 
-if json.loads(secondary_diagnosis)["remotely_solvable"] == True:
-    print(create_diagnostic_report(secondary_diagnosis))
+    elif json.loads(secondary_diagnosis)["remotely_solvable"] == False:
+        file.write("Repair Plan: \n")
+        file.write(create_repair_plan(init_diagnosis, repair_plan.FLOWCHART_URL, repair_plan.QUESTION))
 
-elif json.loads(secondary_diagnosis)["remotely_solvable"] == False:
-    print(create_repair_plan(init_diagnosis, repair_plan.FLOWCHART_URL, repair_plan.QUESTION))  
-
-else:
-    print("No issues found.")
+    else:
+        file.write("No issues found.")
 
 
+
+
+
+
+
+    
